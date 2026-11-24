@@ -1,4 +1,4 @@
-import { supabase } from './supabase.js';
+import { supabase } from './supabase.js?v=2';
 
 const params = new URLSearchParams(window.location.search);
 
