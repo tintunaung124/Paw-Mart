@@ -1,0 +1,182 @@
+/*  RESET  */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+/*  THEME  */
+:root {
+    --background1: #DCEEFF;
+    --background2: #FFD6E0;
+    --primary: #800020;
+    --font-main: Arial, Helvetica, sans-serif;
+}
+
+
+/*  BODY  */
+body {
+    font-family: var(--font-main);
+
+    background: linear-gradient(
+        130deg,
+        var(--background1) 60%,
+        var(--background2) 40%
+    );
+}
+
+/* NAVBAR*/
+
+header {
+    width: 100%;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+}
+
+/* NAV CONTAINER */
+nav {
+    max-width: 1200px;
+    margin: auto;
+
+    height: 110px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 30px;
+}
+
+/*  LOGO  */
+.logo {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: 150px;           
+    object-fit: contain;
+}
+
+
+/*  NAV LINKS  */
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 100px;
+
+    flex: 2;
+    justify-content: center;
+    align-items: center;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 900;
+    transition: 0.2s;
+}
+
+.nav-links a:hover {
+    color: var(--primary);
+}
+
+/* DROPDOWN */
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+
+    top: 100%;     
+    left: 0;
+
+    background: white;
+    min-width: 150px;
+
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+
+    list-style: none;
+    padding: 8px 0;
+    z-index: 10000;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+/* SEARCH */
+
+.search-bar {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.search-bar input {
+    width: 400px;
+    max-width: 100%;
+
+    padding: 12px 20px;
+    font-size: 16px;
+
+    border-radius: 30px;
+    border: 1px solid #ccc;
+}
+
+/* HERO */
+
+.hero {
+    height: 85vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 40px 80px;
+}
+
+.text-container {
+    max-width: 550px;
+}
+
+.text-container h1 {
+    font-size: 44px;
+    font-weight: 300;
+    color: var(--primary);
+}
+
+.text-container strong {
+    font-weight: 700;
+}
+
+.subtitle {
+    margin-top: 18px;
+    font-size: 18px;
+    color: #111;
+}
+
+
+/* paw */
+.paw-img {
+    position: relative;
+    top: 80px;
+    height: 80px;
+    transform: rotate(20deg);
+}
+
+
+/* right image */
+.hero-image img {
+    height: 400px;
+}
+
