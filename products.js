@@ -1,151 +1,74 @@
-<?php
-include("database.php");
+import { supabase } from './supabase.js';
 
-/* get filter values*/
+const params = new URLSearchParams(window.location.search);
 
-$category = $_GET['category'] ?? '';
-$search   = $_GET['search'] ?? '';
+const category = params.get('category') || '';
+const search = params.get('search') || '';
 
+const title = document.getElementById('products-title');
+const grid = document.getElementById('products-grid');
 
-/* build sql */
-
-$sql = "SELECT * FROM Product WHERE 1";
-$params = [];
-$types  = "";
-
-/* category filter */
-if ($category !== '') {
-    $sql .= " AND Category = ?";
-    $params[] = $category;
-    $types .= "s";
+if (category) {
+    title.textContent = `Category: ${category}`;
+} else if (search) {
+    title.textContent = `Search: ${search}`;
+} else {
+    title.textContent = 'All Products';
 }
 
-/* search filter */
-if ($search !== '') {
-    $sql .= " AND ProductName LIKE ?";
-    $params[] = "%$search%";
-    $types .= "s";
+async function loadProducts() {
+    let query = supabase.from('product').select('*');
+
+    if (category) {
+        query = query.eq('Category', category);
+    }
+
+    if (search) {
+        query = query.ilike('ProductName', `%${search}%`);
+    }
+
+    const { data, error } = await query.order('ProductID');
+
+    grid.replaceChildren();
+
+    if (error) {
+        console.error(error);
+        grid.textContent = 'Unable to load products.';
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        grid.textContent = 'No products found.';
+        return;
+    }
+
+    data.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'card';
+
+        const image = document.createElement('img');
+        image.src = `img/products/${encodeURIComponent(product.Image)}`;
+        image.className = 'product-img';
+        image.alt = product.ProductName;
+
+        const name = document.createElement('h4');
+        name.textContent = product.ProductName;
+
+        const price = document.createElement('div');
+        price.className = 'price';
+        price.textContent = `฿${Number(product.Price).toFixed(2)}`;
+
+        const stock = document.createElement('div');
+        stock.className = 'stock';
+        stock.textContent = `Stock: ${product.StockQuantity}`;
+
+        const button = document.createElement('button');
+        button.className = 'btn';
+        button.textContent = 'Add to Cart';
+
+        card.append(image, name, price, stock, button);
+        grid.appendChild(card);
+    });
 }
 
-$stmt = $conn->prepare($sql);
-
-if (!empty($params)) {
-    $stmt->bind_param($types, ...$params);
-}
-
-$stmt->execute();
-$result = $stmt->get_result();
-?>
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Products - Paw Store</title>
-
-    <!-- GLOBAL -->
-    <link rel="stylesheet" href="mainstyling.css">
-
-    <!-- PAGE -->
-    <link rel="stylesheet" href="products.css">
-</head>
-
-<body>
-
-
-<!-- navbar -->
-<header>
-    <nav>
-
-        <div class="logo">
-            <a href="index.php">
-                <img src="img/logo.png" alt="Logo">
-            </a>
-        </div>
-
-        <ul class="nav-links">
-            <li><a href="index.php">Home</a></li>
-
-            <li class="dropdown">
-                <a href="#">Products ▾</a>
-                <ul class="dropdown-menu">
-                    <li><a href="products.php">All</a></li>
-                    <li><a href="products.php?category=Toy">Toy</a></li>
-                    <li><a href="products.php?category=Accessory">Accessory</a></li>  
-                </ul>
-            </li>
-        </ul>
-
-        <div class="search-bar">
-            <form action="products.php" method="GET">
-                <input type="text" name="search" placeholder="Search products...">
-            </form>
-        </div>
-
-    </nav>
-</header>
-
-
-
-<!-- products grid -->
-
-<div class="products-container">
-
-    <h2 class="products-title">
-        <?php
-            if ($category) echo "Category: $category";
-            elseif ($search) echo "Search: $search";
-            else echo "All Products";
-        ?>
-    </h2>
-
-
-    <div class="grid">
-
-        <?php if ($result->num_rows > 0): ?>
-
-            <?php while($row = $result->fetch_assoc()): ?>
-
-                <div class="card">
-
-                    <!-- product image -->
-                    <img 
-                        src="img/products/<?php echo htmlspecialchars($row['Image']); ?>" 
-                        class="product-img"
-                        alt="<?php echo htmlspecialchars($row['ProductName']); ?>"
-                    >
-
-                    <!-- name -->
-                    <h4>
-                        <?php echo htmlspecialchars($row['ProductName']); ?>
-                    </h4>
-
-                    <!-- price -->
-                    <div class="price">
-                        ฿<?php echo number_format($row['Price'], 2); ?>
-                    </div>
-
-                    <!-- stock -->
-                    <div class="stock">
-                        Stock: <?php echo $row['StockQuantity']; ?>
-                    </div>
-
-                    <!-- button -->
-                    <button class="btn">Add to Cart</button>
-
-                </div>
-
-            <?php endwhile; ?>
-
-        <?php else: ?>
-
-            <p>No products found.</p>
-
-        <?php endif; ?>
-
-    </div>
-
-</div>
-</body>
-</html>
+loadProducts();
